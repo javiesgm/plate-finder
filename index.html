@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plate Finder — BHL illustrations by species and region</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,400..700;1,400..700&family=Rubik:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+<style>
+/* Tokens and patterns taken from the GBIF Data Blog v2 "minimal" stylesheet (assets/css/minimal.css) */
+:root{
+  --white:#ffffff; --paper:#f8f7f7; --ink-100:#231f20; --text:#4f4c4d; --ink-strong:#575757;
+  --border:#d3d2d2; --border-subtle:#e9e8e8;
+  --brand:#4c9c2e; --brand-strong:#499134; --brand-soft:#edf5ea; --green-20:#dbebd5; --text-on-brand:#ffffff;
+  --m-paper:var(--white); --m-surface:var(--paper); --m-ink:var(--text); --m-muted:var(--ink-strong);
+  --m-rule:var(--text); --m-rule-soft:var(--border);
+  --m-sans:"Rubik",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --m-serif:"Bitter",Georgia,"Times New Roman",serif;
+  --m-wide:1320px; --m-text:680px; --m-gutter:clamp(16px,4vw,40px); --m-radius:4px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;background:var(--m-paper)}
+body{margin:0;background:var(--m-paper);color:var(--m-ink);font:400 16px/1.5 var(--m-sans);-webkit-font-smoothing:antialiased;padding-bottom:84px}
+::selection{background:var(--green-20);color:var(--ink-100)}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+a{color:var(--brand);text-decoration-thickness:1px;text-underline-offset:3px}
+a:hover{color:var(--brand-strong)}
+button,input,select{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--m-serif);letter-spacing:-.005em;color:var(--m-ink)}
+.wrap{max-width:calc(var(--m-wide) + 2 * var(--m-gutter));margin:0 auto;padding:0 var(--m-gutter)}
+
+/* navbar */
+.nav{border-bottom:1px solid var(--m-rule);background:var(--m-paper)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:64px}
+.nav-brand{font:600 20px/1 var(--m-serif);color:var(--m-ink);text-decoration:none;letter-spacing:-.01em}
+.nav-brand:hover{color:var(--brand)}
+.nav-links{display:flex;gap:clamp(14px,3vw,28px)}
+.nav-links a{font:400 16px/1 var(--m-sans);color:var(--m-ink);text-decoration:none}
+.nav-links a:hover{color:var(--brand);text-decoration:underline;text-underline-offset:4px}
+
+/* intro */
+.intro{padding:clamp(56px,9vw,120px) 0 clamp(32px,5vw,64px);text-align:center}
+h1{font-size:clamp(2.25rem,6vw,3.5rem);font-weight:600;line-height:1.1;letter-spacing:-.015em;margin:0 auto 28px;max-width:16ch}
+h1 a{color:inherit;text-decoration:none}
+h1 a:hover{color:var(--brand)}
+.sub{font-size:1.05rem;line-height:1.6;color:var(--m-muted);max-width:34rem;margin:0 auto}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* search form */
+.form{display:grid;gap:14px;grid-template-columns:1fr;max-width:520px;margin:44px auto 0;text-align:left}
+.form .q{grid-column:1/-1}
+@media(min-width:640px){.form{grid-template-columns:1fr 1fr auto;align-items:end;max-width:720px}.form .q{max-width:520px;width:100%;margin:0 auto 10px}}
+label{display:block;font-size:13px;color:var(--m-muted);margin-bottom:4px}
+input[type=text],input[type=password],select{width:100%;min-height:44px;padding:10px 12px;background:transparent;color:var(--m-ink);border:1px solid var(--m-rule);border-radius:var(--m-radius);font:400 16px/1.4 var(--m-sans)}
+select{font-size:14px;-webkit-appearance:none;appearance:none;height:44px;padding:0 38px 0 12px;line-height:42px;text-overflow:ellipsis;cursor:pointer;
+  background:transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%234f4c4d' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 14px center}
+.form .btn{height:44px;padding-top:0;padding-bottom:0}
+#q{border-width:0 0 1px;border-radius:0;text-align:center;padding:10px 0}
+#q::placeholder,#key::placeholder{color:var(--m-muted);opacity:1}
+input:focus,select:focus{outline:0;border-color:var(--brand);box-shadow:0 1px 0 0 var(--brand)}
+input:focus-visible,select:focus-visible{outline:0}
+
+.btn{display:inline-block;background:var(--brand);color:var(--text-on-brand);border:1px solid var(--brand-strong);border-radius:var(--m-radius);padding:10px 22px;min-height:44px;font:500 14px/1.4 var(--m-sans);cursor:pointer}
+.btn:hover{background:var(--brand-strong);color:var(--text-on-brand)}
+.btn.ghost{background:transparent;color:var(--m-ink);border-color:var(--m-rule)}
+.btn.ghost:hover{background:var(--brand-soft);border-color:var(--brand-strong);color:var(--text)}
+.btn.small{padding:6px 12px;min-height:32px;font-size:13px;font-weight:400}
+.btn.small:not(.ghost){font-weight:500}
+
+/* topic-style chips */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+#groups{justify-content:center;max-width:980px;margin:32px auto 0}
+.chip{border:1px solid var(--m-rule);background:transparent;color:var(--m-ink);border-radius:var(--m-radius);padding:7px 14px;font:400 13px/1.2 var(--m-sans);cursor:pointer}
+.chip:hover{background:var(--brand-soft);border-color:var(--brand-strong);color:var(--text)}
+.chip.on{background:var(--brand);border-color:var(--brand);color:var(--text-on-brand);font-weight:500}
+.chip i{font-style:italic}
+.chip small{font-size:11px;margin-left:6px;padding-left:7px;border-left:1px solid currentColor;opacity:.8}
+@media(max-width:640px){
+  #groups{justify-content:flex-start;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:28px calc(-1 * var(--m-gutter)) 0;padding:0 var(--m-gutter) 4px}
+  #groups::-webkit-scrollbar{display:none}
+  #groups .chip{flex:0 0 auto}
+  .form{margin-top:32px}
+}
+
+/* API key */
+details.key{margin:20px auto 0;font-size:13px;color:var(--m-muted);max-width:560px}
+details.key summary{cursor:pointer;display:inline-block}
+details.key summary:hover{color:var(--brand)}
+details.key[open]{text-align:left;border:1px solid var(--m-rule);border-radius:var(--m-radius);padding:14px 16px;margin-top:24px}
+details.key p{margin:10px 0}
+.keyrow{display:flex;gap:8px;margin-top:8px}
+
+/* status */
+.status{max-width:var(--m-text);margin:0 auto 32px;padding:12px 16px;border:1px solid var(--m-rule);border-radius:var(--m-radius);font-size:14px;text-align:center}
+.status.err{border-color:var(--ink-100);background:var(--m-surface);color:var(--ink-100)}
+.status:empty{display:none}
+
+/* results */
+main{padding-bottom:clamp(40px,6vw,80px)}
+h2{font-size:clamp(1.7rem,3.4vw,2.4rem);font-weight:600;line-height:1.15;letter-spacing:-.01em;margin:0 0 8px}
+h2 i{font-weight:500}
+.meta{color:var(--m-muted);font-size:13px}
+main>.meta{font-size:14px}
+.regions{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0;font-size:12px}
+.regions span{border:1px solid var(--m-rule-soft);border-radius:var(--m-radius);padding:5px 10px;color:var(--m-muted)}
+.regions span b{font-weight:400;color:var(--m-ink)}
+.regions .top{border-color:var(--brand);background:var(--brand-soft)}
+.regions .top b{font-weight:500}
+.bar{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between;margin:24px 0 0;padding:14px 0;border-top:1px solid var(--m-rule);border-bottom:1px solid var(--m-rule)}
+.bar label{display:flex;gap:8px;align-items:center;margin:0;font-size:14px;color:var(--m-ink);cursor:pointer}
+.listbar{margin:16px 0 0;border-bottom:0;padding-bottom:0;justify-content:space-between}
+.listbar + .splist{margin-top:14px}
+.bar select{width:auto;height:36px;line-height:34px}
+.bar .meta{margin-left:auto}
+.bar{justify-content:flex-start}
+input[type=checkbox]{accent-color:var(--brand);width:16px;height:16px;margin:0}
+
+/* species list: ruled card grid, like the blog's post cards */
+.splist{display:grid;gap:1px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));margin:24px 0;border:1px solid var(--m-rule);border-radius:var(--m-radius);overflow:hidden}
+.splist>p{margin:0;padding:24px;color:var(--m-muted)}
+.sp{text-align:left;border:0;border-radius:0;background:transparent;padding:clamp(16px,2vw,22px);cursor:pointer;outline:1px solid var(--m-rule)}
+.sp:hover{background:var(--brand-soft)}
+.sp:focus-visible{outline:2px solid var(--brand);outline-offset:-3px}
+.sp b{font:italic 600 18px/1.3 var(--m-serif);color:var(--m-ink);display:block;margin-bottom:6px}
+.sp:hover b{color:var(--brand);text-decoration:underline 1px;text-underline-offset:3px}
+.sp small{color:var(--m-muted);font-size:13px;line-height:1.5;display:block}
+
+/* titles and plates */
+.title{margin:clamp(32px,4vw,48px) 0 0;padding-top:20px;border-top:1px solid var(--m-rule)}
+.bar + .title{border-top:0;margin-top:12px}
+.title h3{font:600 20px/1.3 var(--m-serif);margin:0 0 4px}
+.title h3 a{color:var(--m-ink);text-decoration:none}
+.title h3 a:hover{color:var(--brand);text-decoration:underline 1px;text-underline-offset:3px}
+.title .meta{margin-bottom:10px}
+.title p.meta{max-width:var(--m-text)}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));margin:10px 0 16px}
+.pg{position:relative;background:var(--m-paper);border:1px solid var(--border-subtle);border-radius:var(--m-radius);overflow:hidden}
+.pg:hover{border-color:var(--m-rule)}
+.pg.sel{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand)}
+.pg img{display:block;width:100%;aspect-ratio:3/4;object-fit:cover;background:var(--m-surface);cursor:zoom-in;transition:transform .5s}
+.pg:hover img{transform:scale(1.03)}
+.pg .cap{position:relative;background:var(--m-paper);display:flex;justify-content:space-between;align-items:center;gap:4px;padding:6px 8px;font-size:12px;color:var(--m-muted)}
+.pg .tag{position:absolute;z-index:1;top:6px;left:6px;background:var(--brand);color:var(--text-on-brand);font-size:11px;line-height:1;font-weight:500;padding:5px 8px;border-radius:var(--m-radius)}
+.pick{border:1px solid var(--m-rule);background:transparent;color:var(--m-ink);border-radius:var(--m-radius);width:30px;height:28px;cursor:pointer;font-weight:500;line-height:1}
+.pick:hover{background:var(--brand-soft);border-color:var(--brand-strong)}
+.pg.sel .pick{background:var(--brand);border-color:var(--brand);color:var(--text-on-brand)}
+.row{display:flex;flex-wrap:wrap;gap:8px 12px;margin:8px 0}
+.row a{color:var(--brand)}
+
+/* selection tray */
+#tray{position:fixed;left:0;right:0;bottom:0;background:var(--ink-100);color:var(--white);padding:10px var(--m-gutter);display:none;z-index:5;font-size:14px}
+#tray .in{max-width:var(--m-wide);margin:0 auto;display:flex;gap:10px;align-items:center;justify-content:space-between}
+
+/* dialogs */
+dialog{border:1px solid var(--m-rule);border-radius:var(--m-radius);padding:0;max-width:min(960px,96vw);width:96vw;max-height:94vh;background:var(--m-paper);color:var(--m-ink)}
+dialog::backdrop{background:rgba(35,31,32,.75)}
+.dh{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--m-rule);position:sticky;top:0;background:var(--m-paper);z-index:1}
+.dh strong{font:600 17px/1.3 var(--m-serif)}
+.db{padding:16px;overflow:auto}
+#lbimg{display:block;max-width:100%;max-height:72vh;margin:0 auto;background:var(--m-surface);border-radius:var(--m-radius)}
+.selitem{display:grid;grid-template-columns:54px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--m-rule-soft);font-size:13px}
+.selitem{align-items:start;padding:16px 0 16px 6px}
+.selreg{font:500 13px/1.4 var(--m-sans);color:var(--m-muted);margin:22px 0 0;padding-bottom:8px;border-bottom:1px solid var(--m-rule)}
+.selthumb{position:relative}
+.selnum{position:absolute;top:-6px;left:-6px;min-width:22px;height:22px;padding:0 5px;border-radius:var(--m-radius);background:var(--brand);color:var(--text-on-brand);font:500 12px/22px var(--m-sans);text-align:center}
+.sellink{margin:8px 0 0}
+.chk{display:flex;align-items:center;gap:8px;margin:0;font-size:13px;color:var(--m-ink);cursor:pointer}
+.db>.row{align-items:center}
+.selact{display:flex;flex-direction:column;gap:6px}
+.selnote{max-width:var(--m-text);margin:10px 0 4px}
+.cite{margin-top:8px;padding-left:12px;border-left:2px solid var(--brand)}
+.cite p{margin:0 0 6px;line-height:1.5}
+.lic{display:inline-block;margin-right:6px;padding:4px 8px;border:1px solid var(--brand);border-radius:var(--m-radius);background:var(--brand-soft);color:var(--text);font-size:12px;line-height:1;text-decoration:none}
+a.lic:hover{border-color:var(--brand-strong);color:var(--brand-strong)}
+.lic.c,.lic.n,.lic.u{background:transparent;border-color:var(--m-rule)}
+.row>.lic{margin-right:0}
+.filebtn{display:inline-flex;align-items:center;margin:0;position:relative}
+.filebtn:focus-within{outline:2px solid var(--brand);outline-offset:2px}
+.btn:disabled{opacity:.55;cursor:default}
+#selmsg{margin:8px 0 0}
+#selmsg:empty{display:none}
+.bar input[type=number]{width:84px;height:36px;padding:0 8px;background:transparent;color:var(--m-ink);border:1px solid var(--m-rule);border-radius:var(--m-radius);font:400 14px/1 var(--m-sans)}
+main>.meta .btn{margin-left:8px}
+@media(max-width:560px){.selitem{grid-template-columns:54px 1fr}.selact{grid-column:2;flex-direction:row}}
+.selitem img{width:54px;height:70px;object-fit:cover;border-radius:var(--m-radius)}
+.selitem i{font:italic 600 15px/1.3 var(--m-serif)}
+textarea{width:100%;height:260px;font:12px/1.5 ui-monospace,Menlo,monospace;margin-top:12px;padding:12px;background:var(--m-surface);color:var(--m-ink);border:1px solid var(--m-rule-soft);border-radius:var(--m-radius)}
+
+/* footer */
+footer{border-top:1px solid var(--m-rule);color:var(--m-ink);font-size:14px;line-height:1.7}
+footer .wrap{padding-top:32px;padding-bottom:32px}
+footer p{margin:0;max-width:var(--m-text)}
+</style>
+</head>
+<body>
+<nav class="nav" aria-label="Main"><div class="wrap">
+  <a class="nav-brand" href="#" data-reset>Plate Finder</a>
+  <div class="nav-links"><a href="https://www.biodiversitylibrary.org" target="_blank" rel="noopener">BHL</a><a href="https://www.gbif.org" target="_blank" rel="noopener">GBIF.org</a></div>
+</div></nav>
+
+<div class="wrap">
+<header class="intro">
+  <h1><a href="#" data-reset>Plate Finder</a></h1>
+  <p class="sub">Find illustrated pages in the Biodiversity Heritage Library by species and region. GBIF resolves the name, its older synonyms and where the species occurs.</p>
+
+  <form class="form" id="f">
+    <div class="q"><label class="sr" for="q">Species or group</label>
+      <input type="text" id="q" list="sug" placeholder="Species, group or common name, e.g. Ara macao" autocomplete="off"><datalist id="sug"></datalist></div>
+    <div><label for="region">Region</label>
+      <select id="region"><option value="">Anywhere</option></select></div>
+    <div><label for="country">Country (optional)</label>
+      <select id="country"><option value="">Any country</option></select></div>
+    <div><button class="btn" type="submit">Search</button></div>
+  </form>
+  <div class="chips" id="groups"></div>
+
+  <details class="key" id="keybox">
+    <summary>BHL API key <span id="keystate"></span></summary>
+    <p class="meta">BHL requires a free key: <a href="https://www.biodiversitylibrary.org/getapikey.aspx" target="_blank" rel="noopener">request one here</a>. It is stored only in this browser.</p>
+    <div class="keyrow"><input type="password" id="key" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" autocomplete="off"><button class="btn ghost" type="button" id="savekey">Save</button></div>
+  </details>
+</header>
+
+<div class="status" id="status" role="status"></div>
+<main id="out"></main>
+
+</div>
+<footer><div class="wrap"><p>Data: <a href="https://www.biodiversitylibrary.org" target="_blank" rel="noopener">Biodiversity Heritage Library</a> API v3, <a href="https://www.gbif.org" target="_blank" rel="noopener">GBIF</a> API, and the <a href="https://www.catalogueoflife.org" target="_blank" rel="noopener">Catalogue of Life</a> via <a href="https://www.checklistbank.org" target="_blank" rel="noopener">ChecklistBank</a>. Check each item's copyright status on BHL before reuse.</p></div></footer>
+
+<div id="tray"><div class="in"><span id="traytxt"></span><button class="btn small" id="opensel" type="button">View selection</button></div></div>
+
+<dialog id="lb"><div class="dh"><strong id="lbt"></strong><button class="btn small ghost" type="button" data-close>Close</button></div>
+  <div class="db"><img id="lbimg" alt=""><div class="row" id="lbact" style="justify-content:center;margin-top:12px"></div></div></dialog>
+
+<dialog id="seld"><div class="dh"><strong>Selection</strong><button class="btn small ghost" type="button" data-close>Close</button></div>
+  <div class="db"><div class="row"><button class="btn small" id="copysel" type="button">Copy numbered list</button><button class="btn small ghost" id="dlcsv" type="button">Download CSV</button><label class="btn small ghost filebtn">Import CSV<input type="file" id="impfile" accept=".csv,text/csv" class="sr"></label><button class="btn small ghost" id="clearsel" type="button">Clear all</button><label class="chk"><input type="checkbox" id="withimg"> Include image file links in the list</label></div>
+  <p class="meta selnote">Citations follow BHL's attribution format and name the library that contributed each volume. License and copyright status come from the volume's record on BHL; copyright rules differ between countries, so check before reuse.</p>
+  <p class="meta" id="selmsg" role="status"></p>
+  <div id="sellist"></div><textarea id="seltext" readonly></textarea></div></dialog>
+
+<script>
+"use strict";
+const GBIF = "https://api.gbif.org/v1";
+const BHL = "https://www.biodiversitylibrary.org";
+const CLB = "https://api.checklistbank.org";
+const CLB_DS = "3LR"; // latest Catalogue of Life release in ChecklistBank
+const BACKBONE = "d7dddbf4-2cf0-4f39-9b2a-bb099caae36c";
+const REGIONS = {LATIN_AMERICA:"Latin America and the Caribbean",EUROPE:"Europe and Central Asia",NORTH_AMERICA:"North America",AFRICA:"Africa",ASIA:"Asia",OCEANIA:"Oceania",ANTARCTICA:"Antarctica"};
+const GROUPS = [["Birds","Aves"],["Mammals","Mammalia"],["Amphibians","Amphibia"],["Butterflies & moths","Lepidoptera"],["Beetles","Coleoptera"],["Molluscs","Mollusca"],["Orchids","Orchidaceae"],["Plants","Plantae"],["Fungi","Fungi"]];
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt = n => Number(n).toLocaleString("en");
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+let apiKey = store.get("bhlKey", "");
+let selection = store.get("bhlSel", []);
+let cur = null;      // current species view state
+let listState = null; // current species-list state
+let runId = 0;
+let sortBy = store.get("bhlSort", "old"); // old | new | n
+let listOrder = "gbif"; // species list order: gbif | bhl
+let pdOnly = false, yFrom = 0, yTo = 0; // result filters, kept for the session
+function yearOf(T){ // first 4-digit year in the publication date, else earliest page year; unknown sorts last
+  const m = String(T.date || "").match(/\d{4}/); if(m) return +m[0];
+  let y = Infinity; for(const I of T.items.values()) for(const p of I.pages.values()){ const k = String(p.year || "").match(/\d{4}/); if(k) y = Math.min(y, +k[0]); }
+  return y;
+}
+function inYears(T){ if(!yFrom && !yTo) return true; const y = yearOf(T); return isFinite(y) && (!yFrom || y >= yFrom) && (!yTo || y <= yTo); }
+function bySort(count){ return (a, b) => { if(sortBy === "n") return count(b) - count(a);
+  const ya = yearOf(a.T), yb = yearOf(b.T), ua = !isFinite(ya), ub = !isFinite(yb);
+  if(ua || ub) return ua - ub || count(b) - count(a);
+  return (sortBy === "new" ? yb - ya : ya - yb) || count(b) - count(a); }; }
+
+/* ---------- network ---------- */
+async function gbif(path){
+  const r = await fetch(GBIF + path);
+  if(!r.ok) throw new Error("GBIF request failed (" + r.status + ")");
+  return r.json();
+}
+async function clb(path){
+  const r = await fetch(CLB + path, {headers:{Accept:"application/json"}});
+  if(!r.ok) throw new Error("ChecklistBank request failed (" + r.status + ")");
+  return r.json();
+}
+let cbN = 0;
+function bhl(params){ // JSONP: works from a local file without CORS
+  return new Promise((res, rej) => {
+    if(!apiKey) return rej(new Error("Add your BHL API key first (see “BHL API key” above)."));
+    const cb = "__bhl" + (++cbN) + "_" + Date.now();
+    const s = document.createElement("script");
+    const done = () => { clearTimeout(t); delete window[cb]; s.remove(); };
+    const t = setTimeout(() => { done(); rej(new Error("BHL took too long to answer. Try again.")); }, 90000);
+    window[cb] = d => { done();
+      if(!d || d.Status !== "ok") rej(new Error("BHL: " + ((d && d.ErrorMessage) || "request failed")));
+      else res((Array.isArray(d.Result) ? d.Result : d.Result ? [d.Result] : []).filter(Boolean)); };
+    s.onerror = () => { done(); rej(new Error("Could not reach BHL.")); };
+    const qs = Object.entries(Object.assign({}, params, {format:"json", apikey:apiKey, callback:cb}))
+      .map(([k,v]) => k + "=" + encodeURIComponent(v)).join("&");
+    s.src = BHL + "/api3?" + qs;
+    document.head.appendChild(s);
+  });
+}
+
+const nameCache = new Map(); // name -> Promise(GetNameMetadata result), newest 60 kept
+function bhlData(name){
+  if(!nameCache.has(name)){
+    nameCache.set(name, bhl({op:"GetNameMetadata", name}).catch(e => { nameCache.delete(name); throw e; }));
+    if(nameCache.size > 60) nameCache.delete(nameCache.keys().next().value);
+  }
+  return nameCache.get(name);
+}
+function countPages(res){ // distinct pages and illustration pages in a GetNameMetadata result
+  const all = new Set(), ill = new Set();
+  for(const r of res) for(const t of (r.Titles || []).filter(Boolean)) for(const it of (t.Items || []).filter(Boolean)) for(const p of (it.Pages || []).filter(Boolean)){
+    all.add(p.PageID); if((p.PageTypes || []).some(x => x && /Illustration|Foldout/i.test(x.PageTypeName))) ill.add(p.PageID); }
+  return {ill:ill.size, pages:all.size};
+}
+
+/* ---------- setup ---------- */
+function setStatus(msg, err){ const el = $("#status"); el.textContent = msg || ""; el.className = "status" + (err ? " err" : ""); }
+function keyUI(){ $("#keystate").textContent = apiKey ? "· saved ✓" : "· needed"; $("#key").value = apiKey; if(!apiKey) $("#keybox").open = true; }
+$("#savekey").onclick = () => { apiKey = $("#key").value.trim(); store.set("bhlKey", apiKey); keyUI(); if(apiKey) $("#keybox").open = false; };
+for(const [k, v] of Object.entries(REGIONS)) $("#region").insertAdjacentHTML("beforeend", `<option value="${k}">${esc(v)}</option>`);
+$("#groups").innerHTML = GROUPS.map(g => `<button type="button" class="chip" data-g="${esc(g[1])}">${esc(g[0])}</button>`).join("");
+$("#groups").onclick = e => { const b = e.target.closest("[data-g]"); if(b){ $("#q").value = b.dataset.g; search(); } };
+const countriesReady = gbif("/enumeration/country").then(list => {
+  list.sort((a,b) => a.title.localeCompare(b.title));
+  $("#country").insertAdjacentHTML("beforeend", list.map(c => `<option value="${esc(c.iso2)}" data-r="${esc(c.gbifRegion||"")}">${esc(c.title)}</option>`).join(""));
+}).catch(() => {});
+async function vernacular(q, limit){ // species whose common name matches q (GBIF backbone)
+  const d = await gbif("/species/search?datasetKey=" + BACKBONE + "&qField=VERNACULAR&rank=SPECIES&status=ACCEPTED&limit=" + (limit || 24) + "&q=" + encodeURIComponent(q));
+  const words = q.toLowerCase().split(/\s+/).filter(Boolean), seen = new Set();
+  const all = (d.results || []).filter(x => x && x.key && x.canonicalName && !seen.has(x.key) && seen.add(x.key)).map(x => {
+    const vs = (x.vernacularNames || []).filter(v => v && v.vernacularName), ok = v => words.every(w => v.vernacularName.toLowerCase().includes(w));
+    const hit = vs.find(v => v.language === "eng" && ok(v)) || vs.find(ok);
+    return {key:x.key, n:null, name:x.canonicalName, family:x.family || "", order:x.order || "", vern:(hit || vs.find(v => v.language === "eng") || vs[0] || {}).vernacularName || "", hit:!!hit};
+  });
+  const hits = all.filter(x => x.hit);
+  return hits.length ? hits : all;
+}
+let sugT;
+$("#q").addEventListener("input", () => { clearTimeout(sugT); const v = $("#q").value.trim(); if(v.length < 3) return;
+  sugT = setTimeout(() => Promise.all([
+      gbif("/species/suggest?datasetKey=" + BACKBONE + "&limit=8&q=" + encodeURIComponent(v)).catch(() => []),
+      vernacular(v, 8).catch(() => [])]).then(([a, c]) => {
+    if($("#q").value.trim() !== v) return; const seen = new Set();
+    $("#sug").innerHTML = a.map(x => `<option value="${esc(x.canonicalName || x.scientificName)}">${esc((x.rank||"").toLowerCase())}</option>`).join("") +
+      c.filter(x => x.hit && x.vern && !seen.has(x.vern.toLowerCase()) && seen.add(x.vern.toLowerCase())).map(x => `<option value="${esc(x.vern)}">${esc(x.name)}</option>`).join(""); }), 250); });
+$("#f").onsubmit = e => { e.preventDefault(); search(); };
+function resetSearch(){ // back to the empty start page; the selection and API key are kept
+  ++runId; cur = null; listState = null; licQ.length = 0; pdOnly = false; yFrom = 0; yTo = 0;
+  $("#q").value = ""; $("#region").value = ""; $("#country").value = ""; $("#sug").innerHTML = "";
+  $("#out").innerHTML = ""; setStatus(""); setHash({}); window.scrollTo(0, 0); $("#q").focus();
+}
+document.addEventListener("click", e => { const a = e.target.closest("[data-reset]"); if(a){ e.preventDefault(); resetSearch(); } });
+document.addEventListener("click", e => { if(e.target.matches("[data-close]")) e.target.closest("dialog").close(); });
+
+function geoQS(){ const c = $("#country").value, r = $("#region").value; return c ? "&country=" + c : (r ? "&gbifRegion=" + r : ""); }
+function geoLabel(){ const c = $("#country"); return c.value ? c.options[c.selectedIndex].text : (REGIONS[$("#region").value] || ""); }
+
+/* ---------- shareable links (state in the address after #) ---------- */
+let lastHash = "";
+function setHash(o){
+  const p = new URLSearchParams(); for(const k of Object.keys(o)) if(o[k]) p.set(k, o[k]);
+  lastHash = p.toString();
+  try{ history.replaceState(null, "", lastHash ? "#" + lastHash : location.pathname + location.search); }
+  catch(e){ try{ location.hash = lastHash; }catch(e2){} }
+}
+function geoState(){ return {region:$("#country").value ? "" : $("#region").value, country:$("#country").value}; }
+async function applyHash(){
+  const raw = location.hash.replace(/^#/, ""); lastHash = raw; if(!raw) return;
+  const p = new URLSearchParams(raw), sp = p.get("sp"), q = p.get("q") || "", region = p.get("region") || "", country = p.get("country") || "";
+  if(REGIONS[region]) $("#region").value = region;
+  if(/^[A-Z]{2}$/.test(country)){ await countriesReady; $("#country").value = country; }
+  if(sp && /^\d+$/.test(sp)){
+    const my = ++runId; $("#out").innerHTML = ""; cur = null; listState = null; setStatus("Opening species…");
+    try{ const x = await gbif("/species/" + sp); if(my !== runId) return;
+      const name = x.canonicalName || x.scientificName || ""; $("#q").value = name;
+      return speciesView({key:x.key, name, entered:name, rank:x.rank || "SPECIES", family:x.family || "", order:x.order || ""}, my);
+    }catch(err){ if(my === runId) setStatus(err.message, true); return; }
+  }
+  $("#q").value = q;
+  if(q || geoQS()) search();
+}
+window.addEventListener("hashchange", () => { if(location.hash.replace(/^#/, "") !== lastHash) applyHash(); });
+
+/* ---------- search entry ---------- */
+async function search(){
+  const q = $("#q").value.trim(); const my = ++runId;
+  $("#out").innerHTML = ""; cur = null; listState = null;
+  if(!q && !geoQS()){ setHash({}); return setStatus("Type a species, a group or a common name, or pick a region."); }
+  setHash(Object.assign({q}, geoState()));
+  try{
+    if(!q) return speciesList(null, my);
+    setStatus("Matching “" + q + "” in the GBIF backbone…");
+    const m = await gbif("/species/match?name=" + encodeURIComponent(q));
+    if(my !== runId) return;
+    if(m.matchType !== "EXACT"){ // not a clean scientific name: try it as a common name
+      const v = await vernacular(q).catch(() => []);
+      if(my !== runId) return;
+      if(v.length === 1) return speciesView({key:v[0].key, name:v[0].name, entered:v[0].name, rank:"SPECIES", family:v[0].family, order:v[0].order, vern:v[0].vern}, my);
+      if(v.length > 1){ listState = {taxon:null, items:v, offset:0, more:false, vernQ:q, hash:Object.assign({q}, geoState())}; renderList(); return setStatus(""); }
+    }
+    if(!m.usageKey || m.matchType === "NONE"){ // unknown to GBIF: ask BHL directly
+      return speciesView({key:null, name:q, entered:q, rank:"", family:""}, my);
+    }
+    const lowRank = ["SPECIES","SUBSPECIES","VARIETY","FORM"].includes(m.rank);
+    if(lowRank){
+      const key = m.acceptedUsageKey || m.usageKey;
+      let acc = m;
+      if(m.acceptedUsageKey) acc = await gbif("/species/" + key);
+      return speciesView({key, name:acc.canonicalName || acc.species || q, entered:m.canonicalName || q, rank:m.rank, family:acc.family || m.family || "", order:acc.order || m.order || ""}, my);
+    }
+    return speciesList({key:m.usageKey, name:m.canonicalName || q, rank:m.rank}, my);
+  }catch(err){ if(my === runId) setStatus(err.message, true); }
+}
+
+/* ---------- species list for a group and/or region ---------- */
+async function speciesList(taxon, my, offset){
+  offset = offset || 0; const PAGE = 36;
+  const where = geoLabel();
+  setStatus("Asking GBIF which " + (taxon ? taxon.name + " " : "") + "species are recorded" + (where ? " in " + where : "") + "…");
+  const d = await gbif("/occurrence/search?limit=0&facet=speciesKey&facetLimit=" + PAGE + "&facetOffset=" + offset + (taxon ? "&taxonKey=" + taxon.key : "") + geoQS());
+  if(my !== runId) return;
+  const counts = ((d.facets || [])[0] || {}).counts || [];
+  const sp = await Promise.all(counts.map(c => gbif("/species/" + c.name).then(s => ({key:+c.name, n:c.count, name:s.canonicalName || s.scientificName, family:s.family || "", order:s.order || "", vern:s.vernacularName || ""})).catch(() => null)));
+  if(my !== runId) return;
+  const items = sp.filter(Boolean);
+  if(!listState){ listState = {taxon, items:[], offset:0, hash:Object.assign({q:$("#q").value.trim()}, geoState())}; }
+  listState.items.push(...items); listState.offset = offset + PAGE; listState.more = counts.length === PAGE;
+  renderList(); setStatus("");
+}
+function spMeta(s){ // second line of a species card
+  const parts = [s.vern, s.family].filter(Boolean);
+  if(s.n != null) parts.push(fmt(s.n) + " records");
+  if(listOrder === "bhl" || s.ill != null) parts.push(s.ill === undefined ? "counting BHL pages…" : s.ill === null ? "BHL count unavailable" : fmt(s.ill) + " illustration page" + (s.ill === 1 ? "" : "s") + " in BHL");
+  return parts.join(" · ");
+}
+function renderList(){
+  const L = listState, where = L.vernQ ? "" : geoLabel(), byBHL = listOrder === "bhl";
+  let items = L.items;
+  if(byBHL && items.length && items.every(s => s.ill !== undefined)) items = items.map((s, i) => ({s, i})).sort((a, b) => (b.s.ill == null ? -1 : b.s.ill) - (a.s.ill == null ? -1 : a.s.ill) || a.i - b.i).map(x => x.s);
+  const how = byBHL ? (L.vernQ ? "Species whose common name matches your search, ordered by the illustration pages BHL has indexed under each accepted name."
+      : "The " + L.items.length + " species with the most GBIF occurrence records" + (where ? " in this area" : "") + ", ordered by the illustration pages BHL has indexed under each accepted name.")
+    : (L.vernQ ? "Species whose common name matches your search, from GBIF." : "Species ranked by number of GBIF occurrence records" + (where ? " in this area" : "") + ".");
+  $("#out").innerHTML = `<h2>${L.vernQ ? "Species called “" + esc(L.vernQ) + "”" : (L.taxon ? esc(L.taxon.name) : "All species") + (where ? " · " + esc(where) : "")}</h2>
+    <p class="meta">${how} Tap one to look for its plates.</p>
+    <div class="bar listbar"><label>Order by <select id="listorder"><option value="gbif"${byBHL ? "" : " selected"}>${L.vernQ ? "GBIF match" : "GBIF records"}</option><option value="bhl"${byBHL ? " selected" : ""}>BHL illustrations</option></select></label>
+      <button class="btn small ghost" id="copylink" type="button">Copy link to this search</button></div>
+    <div class="splist">${items.map(s => `<button class="sp" data-sp="${s.key}"><b>${esc(s.name)}</b><small>${esc(spMeta(s))}</small></button>`).join("") || "<p>No species found for this combination.</p>"}</div>
+    ${L.more ? '<button class="btn ghost" id="moresp">Load more species</button>' : ""}`;
+  const more = $("#moresp"); if(more) more.onclick = () => speciesList(L.taxon, runId, L.offset).catch(e => setStatus(e.message, true));
+  if(byBHL) countList();
+}
+async function countList(){ // ask BHL about each listed species, three at a time, then re-order
+  const L = listState, my = runId;
+  if(!L || L.counting || !L.items.some(s => s.ill === undefined)) return;
+  if(!apiKey) return setStatus("Add your BHL API key first (see “BHL API key” above) to order by illustrations.", true);
+  L.counting = true;
+  const live = () => runId === my && listState === L && listOrder === "bhl";
+  const progress = () => { if(live()) setStatus("Counting illustration pages in BHL: " + L.items.filter(s => s.ill !== undefined).length + " of " + L.items.length + " species…"); };
+  const worker = async () => { let s;
+    while(live() && (s = L.items.find(x => x.ill === undefined && !x.cnt))){ s.cnt = true;
+      try{ const c = countPages(await bhlData(s.name)); s.ill = c.ill; }catch(e){ s.ill = null; }
+      s.cnt = false;
+      if(live()){ const el = document.querySelector('.sp[data-sp="' + s.key + '"] small'); if(el) el.textContent = spMeta(s); progress(); } } };
+  progress();
+  await Promise.all([worker(), worker(), worker()]);
+  L.counting = false;
+  if(!live()) return;
+  const bad = L.items.filter(s => s.ill === null).length;
+  setStatus(bad ? "BHL did not answer for " + bad + " species; they are listed last." : "", !!bad);
+  renderList();
+}
+$("#out").addEventListener("click", e => { if(e.target.id !== "copylink") return; const b = e.target, t = b.textContent;
+  copyText(location.href); b.textContent = "Link copied"; setTimeout(() => { b.textContent = t; }, 1500); });
+$("#out").addEventListener("click", e => {
+  const b = e.target.closest("[data-sp]"); if(!b) return;
+  const s = listState.items.find(x => x.key === +b.dataset.sp); const keep = listState; const my = ++runId;
+  speciesView({key:s.key, name:s.name, entered:s.name, rank:"SPECIES", family:s.family, order:s.order, vern:s.vern, back:keep}, my).catch(err => setStatus(err.message, true));
+});
+
+/* ---------- species view ---------- */
+async function speciesView(sp, my){
+  cur = {sp, names:[sp.name], tags:{}, clb:"", searched:new Set(), titles:new Map(), illOnly:true, regions:[], topRegion:"", shown:15};
+  if(sp.entered && sp.entered.toLowerCase() !== sp.name.toLowerCase()) cur.names.push(sp.entered);
+  licQ.length = 0;
+  setHash(sp.key ? {sp:String(sp.key)} : {q:sp.name});
+  renderSpecies();
+  if(sp.key){
+    gbif("/occurrence/search?limit=0&facet=gbifRegion&taxonKey=" + sp.key).then(d => { if(my !== runId) return;
+      cur.regions = (((d.facets || [])[0] || {}).counts || []).filter(c => REGIONS[c.name]);
+      cur.total = d.count; cur.topRegion = cur.regions[0] ? cur.regions[0].name : ""; renderSpecies(); }).catch(() => {});
+    gbif("/species/" + sp.key + "/synonyms?limit=200").then(d => { if(my !== runId) return;
+      const seen = new Set(cur.names.map(n => n.toLowerCase()));
+      for(const s of d.results || []){ const n = s.canonicalName; if(!n || n.split(" ").length < 2 || seen.has(n.toLowerCase())) continue; seen.add(n.toLowerCase()); cur.names.push(n); }
+      renderSpecies(); }).catch(() => {});
+    if(!sp.vern) gbif("/species/" + sp.key + "/vernacularNames?limit=100").then(d => { if(my !== runId) return;
+      const v = (d.results || []).find(x => x.language === "eng") || (d.results || [])[0]; if(v){ sp.vern = v.vernacularName; renderSpecies(); } }).catch(() => {});
+  }
+  clbNames(sp, my);
+  await bhlName(sp.name, my);
+}
+/* older names from the Catalogue of Life (ChecklistBank), merged with GBIF's */
+function addName(st, n, tag){
+  n = String(n || "").trim(); if(n.split(" ").length < 2) return 0;
+  const k = n.toLowerCase(); if(tag && !st.tags[k]) st.tags[k] = tag;
+  if(st.names.some(x => x.toLowerCase() === k)) return 0;
+  st.names.push(n); return 1;
+}
+async function clbNames(sp, my){
+  const st = cur; st.clb = "loading";
+  const live = () => my === runId && cur === st;
+  const norm = a => String(a || "").toLowerCase().replace(/[\s.,]/g, "");
+  const isAcc = u => /accepted/i.test(u.status || "");
+  try{
+    const d = await clb("/dataset/" + CLB_DS + "/nameusage/search?content=SCIENTIFIC_NAME&type=EXACT&limit=20&q=" + encodeURIComponent(sp.name));
+    if(!live()) return;
+    const want = sp.name.toLowerCase();
+    const us = (d.result || []).map(r => r.usage || r).filter(u => u && u.name && String(u.name.scientificName || "").toLowerCase() === want);
+    const u = us.find(isAcc) || us[0];
+    if(!u){ st.clb = "none"; return renderSpecies(); }
+    let accId = u.id, accName = u.name, added = 0;
+    if(!isAcc(u) && u.accepted && u.accepted.id){ // the searched name is itself an old name in the Catalogue of Life
+      accId = u.accepted.id; accName = u.accepted.name || {};
+      added += addName(st, accName.scientificName, "current name");
+    }
+    const syn = await clb("/dataset/" + CLB_DS + "/taxon/" + encodeURIComponent(accId) + "/synonyms");
+    if(!live()) return;
+    const found = [];
+    const walk = (node, group) => {
+      if(Array.isArray(node)) return node.forEach(x => walk(x, group));
+      if(!node || typeof node !== "object") return;
+      if(node.name && node.name.scientificName) return void found.push({name:node.name, group});
+      if(node.scientificName) return void found.push({name:node, group});
+      for(const k of Object.keys(node)) if(k !== "accepted") walk(node[k], group || k);
+    };
+    walk(syn, "");
+    // original combination: a homotypic synonym whose author is the one in the accepted name's parentheses
+    const par = /^\(([^)]+)\)/.exec(String(accName.authorship || "").trim());
+    for(const f of found){
+      if(/misapplied/i.test(f.group)) continue; // these names belong to other species
+      const orig = par && /homotypic/i.test(f.group) && !/heterotypic/i.test(f.group) && norm(f.name.authorship) === norm(par[1]);
+      added += addName(st, f.name.scientificName, orig ? "original name" : "");
+    }
+    st.clb = {n:added};
+  }catch(err){ if(!live()) return; st.clb = "err"; }
+  renderSpecies();
+}
+async function addAllNames(){ // search BHL for every older name, one at a time
+  const st = cur, my = runId;
+  if(st.bulk){ st.bulk = false; return; } // second click stops after the current name
+  const todo = st.names.slice(1).filter(n => !st.searched.has(n));
+  if(!todo.length) return;
+  st.bulk = true; renderSpecies();
+  let i = 0;
+  for(const n of todo){ if(my !== runId || cur !== st || !st.bulk) break; i++; await bhlName(n, my, " (" + i + " of " + todo.length + ")"); }
+  if(my !== runId || cur !== st) return;
+  const stopped = !st.bulk, failed = todo.slice(0, i).filter(n => !st.searched.has(n)).length; st.bulk = false; renderSpecies();
+  setStatus((stopped ? "Stopped after " + i + " of " + todo.length + " older names." : "Searched BHL for all " + todo.length + " older names.") + (failed ? " " + failed + " could not be loaded; tap them to retry." : ""), !!failed);
+}
+async function bhlName(name, my, note){
+  if(cur.searched.has(name)) return;
+  setStatus("Searching BHL for pages that mention " + name + "…" + (note || ""));
+  try{
+    const res = await bhlData(name);
+    if(my !== runId) return;
+    cur.searched.add(name); let added = 0;
+    for(const r of res) for(const t of (r.Titles || []).filter(Boolean)){
+      let T = cur.titles.get(t.TitleID);
+      if(!T){ T = {id:t.TitleID, title:t.ShortTitle || "Untitled", date:t.PublicationDate || "", url:t.TitleUrl, items:new Map()}; cur.titles.set(t.TitleID, T); }
+      for(const it of (t.Items || []).filter(Boolean)){
+        let I = T.items.get(it.ItemID);
+        if(!I){ I = {id:it.ItemID, vol:it.Volume || "", url:it.ItemUrl, pages:new Map(), plates:null}; T.items.set(it.ItemID, I); }
+        for(const p of (it.Pages || []).filter(Boolean)) if(!I.pages.has(p.PageID)){ I.pages.set(p.PageID, pageObj(p, name)); added++; }
+      }
+    }
+    setStatus(added ? "" : "BHL has no indexed pages for “" + name + "”. Try one of the older names below.");
+    renderSpecies();
+  }catch(err){ if(my === runId) setStatus(err.message, true); }
+}
+function pageObj(p, name){
+  const types = (p.PageTypes || []).map(t => t.PageTypeName);
+  const num = (p.PageNumbers || []).map(n => [n.Prefix, n.Number].filter(Boolean).join(" ")).filter(Boolean)[0] || "";
+  return {id:p.PageID, types, ill:types.some(t => /Illustration|Foldout/i.test(t)), num, year:p.Year || "", name,
+    thumb:p.ThumbnailUrl || BHL + "/pagethumb/" + p.PageID, full:p.FullSizeImageUrl || BHL + "/pageimage/" + p.PageID, url:p.PageUrl || BHL + "/page/" + p.PageID};
+}
+/* license of each volume, loaded two at a time as titles come into view */
+const licQ = []; let licBusy = 0, rrT;
+function wantLic(I){ if(I.lic || I.licP || !apiKey) return; I.licP = true; licQ.push(I); pumpLic(); }
+function pumpLic(){
+  while(licBusy < 2 && licQ.length){ const I = licQ.shift(); licBusy++;
+    itemInfo(I.id).then(m => { I.lic = Object.assign({inst:String(m.HoldingInstitution || "").trim()}, licenseOf(m)); }, () => { I.licErr = true; })
+      .then(() => { licBusy--; const el = document.getElementById("lic-" + I.id); if(el) el.outerHTML = licTag(I);
+        if(pdOnly && I.lic && I.lic.kind !== "pd"){ clearTimeout(rrT); rrT = setTimeout(() => { if(cur) renderSpecies(); }, 250); }
+        pumpLic(); });
+  }
+}
+function licTag(I){ const c = I.lic;
+  if(!c) return `<span class="lic u" id="lic-${I.id}">${I.licErr ? "License not loaded" : "Checking license…"}</span>`;
+  return c.url ? `<a class="lic ${c.kind}" id="lic-${I.id}" href="${esc(c.url)}" target="_blank" rel="noopener" title="BHL copyright status: ${esc(c.status)}">${esc(c.label)} ↗</a>` : `<span class="lic ${c.kind}" id="lic-${I.id}" title="BHL copyright status: ${esc(c.status)}">${esc(c.label)}</span>`; }
+function renderSpecies(){
+  if(!cur) return; const sp = cur.sp;
+  let nIll = 0, nAll = 0;
+  const titles = [...cur.titles.values()].map(T => {
+    const items = [...T.items.values()].map(I => { const pages = [...I.pages.values()]; const ill = pages.filter(p => p.ill); nIll += ill.length; nAll += pages.length; const raw = cur.illOnly ? ill : pages; return {I, raw, show:(pdOnly && I.lic && I.lic.kind !== "pd") ? [] : raw, nIll:ill.length, nAll:pages.length}; });
+    return {T, items, n:items.reduce((a,x) => a + x.show.length, 0), nRaw:items.reduce((a,x) => a + x.raw.length, 0), nAll:items.reduce((a,x) => a + x.nAll, 0)};
+  });
+  const withHits = titles.filter(t => t.n && inYears(t.T)).sort(bySort(t => t.n));
+  const textOnly = titles.filter(t => !t.nRaw && t.nAll && inYears(t.T)).sort(bySort(t => t.nAll));
+  const nHidden = titles.filter(t => t.nRaw).length - withHits.length;
+  const regions = cur.regions.map((r,i) => `<span class="${i===0?"top":""}"><b>${esc(REGIONS[r.name])}</b> ${Math.round(100*r.count/(cur.total||1))}%</span>`).join("");
+  const tagOf = n => cur.tags[n.toLowerCase()] || "";
+  const others = cur.names.slice(1).map((n, i) => ({n, i})).sort((a, b) => !!tagOf(b.n) - !!tagOf(a.n) || a.i - b.i).map(x => x.n);
+  const clbNote = cur.clb === "loading" ? " Checking the Catalogue of Life…" : cur.clb === "err" ? " ChecklistBank did not answer, so these are GBIF's names only." : cur.clb === "none" ? " Not found in the Catalogue of Life, so these are GBIF's names only." : cur.clb && cur.clb.n ? " Includes " + cur.clb.n + " from the Catalogue of Life." : "";
+  let h = `${sp.back ? '<p class="row"><button class="btn small ghost" id="back">← Back to species list</button><button class="btn small ghost" id="copylink" type="button">Copy link to this species</button></p>' : '<p class="row"><button class="btn small ghost" id="copylink" type="button">Copy link to this species</button></p>'}
+    <h2><i>${esc(sp.name)}</i></h2>
+    <p class="meta">${esc([sp.vern, sp.family, sp.order].filter(Boolean).join(" · "))}${sp.key ? ` · <a href="https://www.gbif.org/species/${sp.key}" target="_blank" rel="noopener">GBIF ↗</a>` : " · not matched in GBIF, searching BHL by the name as typed"}</p>
+    ${regions ? `<div class="regions" title="Share of GBIF occurrence records by region">${regions}</div>` : ""}
+    ${others.length ? `<p class="meta" style="margin-bottom:0">Old books often use other names. Tap to add their pages.${esc(clbNote)}</p><div class="chips">${others.slice(0,40).map(n => `<button class="chip ${cur.searched.has(n)?"on":""}" data-syn="${esc(n)}"><i>${esc(n)}</i>${tagOf(n) ? ` <small>${esc(tagOf(n))}</small>` : ""}</button>`).join("")}</div><p class="row" style="align-items:center">${cur.bulk ? '<button class="btn small ghost" id="allsyn">Stop</button>' : others.some(n => !cur.searched.has(n)) ? `<button class="btn small ghost" id="allsyn">${others.length === 1 ? "Add the older name" : "Add all " + others.length + " older names"}</button>` : '<span class="meta">All older names added.</span>'}</p>${others.length > 40 ? `<p class="meta">Showing 40 of ${others.length} names.</p>` : ""}` : (cur.clb === "loading" ? '<p class="meta">Checking the Catalogue of Life for older names…</p>' : "")}
+    <div class="bar"><label><input type="checkbox" id="illonly" ${cur.illOnly?"checked":""}> Illustration pages only</label>
+      <label>Sort titles <select id="sortby"><option value="old"${sortBy==="old"?" selected":""}>Oldest first</option><option value="new"${sortBy==="new"?" selected":""}>Newest first</option><option value="n"${sortBy==="n"?" selected":""}>Most pages first</option></select></label>
+      <label><input type="checkbox" id="pdonly" ${pdOnly?"checked":""}> Public domain only</label>
+      <label>Years <input type="number" id="yfrom" inputmode="numeric" min="1400" max="2100" placeholder="from" value="${yFrom || ""}" aria-label="From year"> to <input type="number" id="yto" inputmode="numeric" min="1400" max="2100" placeholder="to" value="${yTo || ""}" aria-label="To year"></label>
+      <span class="meta">${fmt(nIll)} illustration pages · ${fmt(nAll)} pages mention the name · ${cur.titles.size} titles${nHidden > 0 ? " · " + nHidden + " hidden by your filters" : ""}</span></div>`;
+  if(!withHits.length && nHidden > 0) h += '<p class="meta">No titles match the current filters.</p>';
+  for(const t of withHits.slice(0, cur.shown)) h += titleBlock(t);
+  if(withHits.length > cur.shown) h += `<p><button class="btn ghost" id="moret">Show more titles (${withHits.length - cur.shown} left)</button></p>`;
+  if(cur.illOnly && textOnly.length){
+    h += `<div class="title"><h3>Mentioned in text only</h3><p class="meta">Plates often sit beside the text without the name printed on them. Scan a volume to see all its illustration pages; those next to a mention are flagged.</p>
+      ${textOnly.slice(0, 25).map(t => t.items.filter(x => x.nAll).map(x => `<div class="row" style="align-items:center"><button class="btn small ghost" data-scan="${t.T.id}|${x.I.id}">Scan for plates</button><span><a href="${esc(x.I.url || t.T.url)}" target="_blank" rel="noopener">${esc(t.T.title)}</a> <span class="meta">${esc([x.I.vol, t.T.date].filter(Boolean).join(", "))} · ${x.nAll} mentions</span></span></div><div id="scan-${x.I.id}"></div>`).join("")).join("")}</div>`;
+  }
+  $("#out").innerHTML = h;
+  // licenses: the titles on screen, or every candidate when filtering to public domain
+  for(const t of (pdOnly ? titles.filter(t => t.nRaw && inYears(t.T)) : withHits.slice(0, cur.shown))) for(const x of t.items) if(x.raw.length) wantLic(x.I);
+}
+function titleBlock(t){
+  let h = `<section class="title"><h3><a href="${esc(t.T.url)}" target="_blank" rel="noopener">${esc(t.T.title)}</a></h3><div class="meta">${esc(t.T.date || "Date unknown")}</div>`;
+  for(const x of t.items){ if(!x.show.length) continue;
+    h += `<div class="row" style="align-items:center"><span class="meta">${esc(x.I.vol || "Volume")} · ${x.show.length} page${x.show.length>1?"s":""}</span>${licTag(x.I)}<button class="btn small ghost" data-scan="${t.T.id}|${x.I.id}">All plates in this volume</button></div>
+      <div class="grid">${x.show.slice(0, 60).map(p => card(p, t.T, x.I)).join("")}</div><div id="scan-${x.I.id}"></div>`; }
+  return h + "</section>";
+}
+const reg = new Map(); // pageId -> record for selection / lightbox
+function card(p, T, I, near){
+  reg.set(String(p.id), {id:p.id, thumb:p.thumb, full:p.full, url:p.url, title:T.title, date:p.year || T.date, vol:I.vol, item:I.id, num:p.num, species:cur.sp.name, region:cur.topRegion});
+  const on = selection.some(s => String(s.id) === String(p.id));
+  return `<figure class="pg ${on?"sel":""}" data-pg="${p.id}" style="margin:0">${near ? '<span class="tag">near mention</span>' : ""}
+    <img loading="lazy" src="${esc(p.thumb)}" alt="Page ${esc(p.num)} of ${esc(T.title)}">
+    <figcaption class="cap"><span>${esc(p.num ? "p. " + p.num : (p.types[0] || ""))}</span><button class="pick" type="button" title="Select for collage" aria-label="Select">${on?"✓":"+"}</button></figcaption></figure>`;
+}
+
+/* scan a whole volume for illustration pages */
+async function scan(titleId, itemId){
+  const T = cur.titles.get(+titleId) || cur.titles.get(titleId); const I = T && (T.items.get(+itemId) || T.items.get(itemId));
+  const box = document.getElementById("scan-" + itemId); if(!I || !box) return;
+  box.innerHTML = '<p class="meta">Scanning volume…</p>';
+  try{
+    if(!I.plates){
+      const res = await bhl({op:"GetItemMetadata", id:itemId, idtype:"bhl", pages:"t", ocr:"f", parts:"f"});
+      const all = ((res[0] || {}).Pages || []).filter(Boolean);
+      const mention = new Set([...I.pages.keys()].map(String));
+      const idx = all.map((p,i) => mention.has(String(p.PageID)) ? i : -1).filter(i => i >= 0);
+      I.plates = all.map((p,i) => ({p:pageObj(p, ""), near:idx.some(j => Math.abs(j - i) <= 2)})).filter(x => x.p.ill)
+        .sort((a,b) => (b.near - a.near));
+    }
+    box.innerHTML = I.plates.length ? `<p class="meta">${I.plates.length} illustration pages in this volume${I.plates.some(x => x.near) ? "; flagged ones are within two pages of a mention" : ""}.</p><div class="grid">${I.plates.slice(0, 200).map(x => card(x.p, T, I, x.near)).join("")}</div>`
+      : '<p class="meta">No pages in this volume are tagged as illustrations. BHL page tagging is incomplete, so it may still be worth opening the volume.</p>';
+  }catch(err){ box.innerHTML = `<p class="meta">${esc(err.message)}</p>`; }
+}
+
+$("#out").addEventListener("click", e => {
+  if(!cur) return; let b;
+  if(e.target.id === "back"){ const keep = cur.sp.back; ++runId; cur = null; listState = keep; setHash(keep.hash || {}); renderList(); setStatus(""); return; }
+  if(e.target.id === "allsyn") return void addAllNames();
+  if(e.target.id === "moret"){ cur.shown += 15; return renderSpecies(); }
+  if((b = e.target.closest("[data-syn]"))){ b.classList.add("on"); return void bhlName(b.dataset.syn, runId); }
+  if((b = e.target.closest("[data-scan]"))){ const [t, i] = b.dataset.scan.split("|"); return void scan(t, i); }
+  const fig = e.target.closest("[data-pg]"); if(!fig) return;
+  if(e.target.closest(".pick")) return toggleSel(fig.dataset.pg);
+  if(e.target.tagName === "IMG") openLB(fig.dataset.pg);
+});
+$("#out").addEventListener("change", e => { if(e.target.id === "listorder" && listState){ listOrder = e.target.value; if(listOrder !== "bhl") setStatus(""); renderList(); } });
+$("#out").addEventListener("change", e => { if(!cur) return; if(e.target.id === "illonly"){ cur.illOnly = e.target.checked; renderSpecies(); }
+  if(e.target.id === "pdonly"){ pdOnly = e.target.checked; cur.shown = 15; renderSpecies(); }
+  if(e.target.id === "yfrom" || e.target.id === "yto"){ const v = parseInt(e.target.value, 10), y = v >= 1000 && v <= 2100 ? v : 0;
+    if(e.target.id === "yfrom") yFrom = y; else yTo = y; cur.shown = 15; renderSpecies(); }
+  if(e.target.id === "sortby"){ sortBy = e.target.value; store.set("bhlSort", sortBy); if(cur){ cur.shown = 15; renderSpecies(); } } });
+
+/* ---------- lightbox ---------- */
+function openLB(id){
+  const r = reg.get(String(id)); if(!r) return;
+  $("#lbt").textContent = r.title + (r.date ? " (" + r.date + ")" : "");
+  $("#lbimg").src = r.thumb; const big = new Image(); big.onload = () => { if($("#lb").open) $("#lbimg").src = r.full; }; big.src = r.full;
+  const on = selection.some(s => String(s.id) === String(id));
+  $("#lbact").innerHTML = `<button class="btn small" id="lbsel">${on ? "Remove from selection" : "Select for collage"}</button>
+    <a class="btn small ghost" href="${esc(r.full)}" target="_blank" rel="noopener" style="text-decoration:none">Full-size image ↗</a>
+    <a class="btn small ghost" href="${esc(r.url)}" target="_blank" rel="noopener" style="text-decoration:none">Open in BHL ↗</a>`;
+  $("#lbsel").onclick = () => { toggleSel(id); openLB(id); };
+  if(!$("#lb").open) $("#lb").showModal();
+}
+
+/* ---------- selection ---------- */
+function toggleSel(id){
+  const i = selection.findIndex(s => String(s.id) === String(id));
+  if(i >= 0) selection.splice(i, 1); else { const r = reg.get(String(id)); if(r) selection.push(r); }
+  store.set("bhlSel", selection);
+  document.querySelectorAll(`[data-pg="${id}"]`).forEach(f => { const on = i < 0; f.classList.toggle("sel", on); f.querySelector(".pick").textContent = on ? "✓" : "+"; });
+  tray();
+}
+function tray(){ $("#tray").style.display = selection.length ? "block" : "none"; $("#traytxt").textContent = selection.length + " page" + (selection.length === 1 ? "" : "s") + " selected"; }
+/* ---------- citation + license (BHL attribution guidelines) ---------- */
+const itemCache = new Map(); // itemId -> Promise(item metadata)
+function itemInfo(id){
+  if(!itemCache.has(id)) itemCache.set(id, bhl({op:"GetItemMetadata", id, idtype:"bhl", pages:"f", ocr:"f", parts:"f"}).then(r => r[0] || {}).catch(e => { itemCache.delete(id); throw e; }));
+  return itemCache.get(id);
+}
+function licenseOf(m){
+  const st = String(m.CopyrightStatus || "").trim(), url = String(m.LicenseUrl || "").trim();
+  const cc = url.match(/creativecommons\.org\/(licenses|publicdomain)\/([a-z-]+)(?:\/(\d(?:\.\d)?))?/i);
+  let name = "";
+  if(cc) name = cc[1].toLowerCase() === "publicdomain" ? (cc[2].toLowerCase() === "zero" ? "CC0 " + (cc[3] || "1.0") : "Public Domain Mark " + (cc[3] || "1.0")) : "CC " + cc[2].toUpperCase() + (cc[3] ? " " + cc[3] : "");
+  let label, kind;
+  if(/^in copyright/i.test(st)){ kind = "c"; label = name || "In copyright, license not specified"; }
+  else if(/no known/i.test(st)){ kind = "n"; label = name || "No known copyright restrictions"; }
+  else if(/not provided|contact/i.test(st)){ kind = "u"; label = name || "Copyright status not provided"; }
+  else { kind = "pd"; label = name || "Public domain"; }
+  return {label, kind, url, status:st || "Not specified", holder:String(m.RightsHolder || "").trim()};
+}
+async function ensureCites(){
+  let changed = false;
+  for(const s of selection){
+    if(s.cite) continue;
+    try{
+      if(!s.item){ const pm = await bhl({op:"GetPageMetadata", pageid:s.id, ocr:"f", names:"f"}); s.item = (pm[0] || {}).ItemID; }
+      if(!s.item) throw new Error("volume not found");
+      const m = await itemInfo(s.item);
+      s.cite = Object.assign({inst:String(m.HoldingInstitution || "").trim()}, licenseOf(m));
+      delete s.citeErr;
+    }catch(err){ s.citeErr = err.message; }
+    changed = true;
+  }
+  if(changed) store.set("bhlSel", selection);
+  return changed;
+}
+function attribution(s){ return "Image from the Biodiversity Heritage Library. " + (s.cite && s.cite.inst ? "Contributed by " + s.cite.inst + ". " : "") + "| www.biodiversitylibrary.org"; }
+function sourceLine(s){ return s.title + (s.date ? " (" + s.date + ")" : "") + (s.vol ? ", " + s.vol : "") + (s.num ? ", p. " + s.num : ""); }
+function licenseLine(s){ const c = s.cite; if(!c) return "License: not loaded, check the volume on BHL";
+  return "License: " + c.label + (c.url ? " (" + c.url + ")" : "") + " · BHL copyright status: " + c.status + (c.kind === "c" && c.holder ? " · Rights holder: " + c.holder : ""); }
+function pageLink(s){ return BHL + "/page/" + s.id; } // BHL's permanent short link to the page
+function citeText(s){ return s.species + "\n" + sourceLine(s) + "\n" + attribution(s) + "\n" + licenseLine(s) + "\nLink: " + pageLink(s); }
+function grouped(){ // selection grouped by region, numbered in the order shown
+  const by = {};
+  for(const s of selection){ const k = REGIONS[s.region] || "Region unknown"; (by[k] = by[k] || []).push(s); }
+  let n = 0;
+  return Object.keys(by).sort().map(k => ({region:k, items:by[k].map(s => ({s, n:++n}))}));
+}
+function selText(){
+  const img = $("#withimg").checked;
+  return grouped().map(g => g.region.toUpperCase() + "\n\n" + g.items.map(x => { const s = x.s, pad = " ".repeat(String(x.n).length + 2);
+    return [x.n + ". " + s.species, sourceLine(s), attribution(s), licenseLine(s), "Link: " + pageLink(s)].concat(img ? ["Image file: " + s.full] : []).join("\n" + pad); }).join("\n\n")).join("\n\n\n");
+}
+function citeHTML(s){
+  const c = s.cite;
+  if(!c) return `<div class="cite"><span class="meta">${s.citeErr ? "Could not load contributor and license: " + esc(s.citeErr) : "Looking up contributor and license…"}</span></div>`;
+  const lic = c.url ? `<a class="lic ${c.kind}" href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.label)} ↗</a>` : `<span class="lic ${c.kind}">${esc(c.label)}</span>`;
+  return `<div class="cite"><p>${esc(attribution(s))}</p>
+    <p class="meta">${lic} BHL copyright status: ${esc(c.status)}${c.kind === "c" && c.holder ? " · Rights holder: " + esc(c.holder) : ""}${c.inst ? "" : " · Holding institution not listed, check the volume on BHL"}</p></div>`;
+}
+function renderSel(){
+  $("#sellist").innerHTML = grouped().map(g => `<h4 class="selreg">${esc(g.region)}</h4>` + g.items.map(x => { const s = x.s; return `<div class="selitem"><div class="selthumb"><img src="${esc(s.thumb)}" alt=""><span class="selnum">${x.n}</span></div><div><i>${esc(s.species)}</i><br><span class="meta">${esc(sourceLine(s))}</span>${citeHTML(s)}<p class="sellink"><a href="${esc(pageLink(s))}" target="_blank" rel="noopener">${esc(pageLink(s).replace("https://www.", ""))}</a> · <a href="${esc(s.full)}" target="_blank" rel="noopener">Full-size image ↗</a></p></div><div class="selact"><button class="btn small ghost" data-cite="${s.id}">Copy citation</button><button class="btn small ghost" data-link="${s.id}">Copy link</button><button class="btn small ghost" data-rm="${s.id}">Remove</button></div></div>`; }).join("")).join("") || "<p>Nothing selected.</p>";
+  $("#seltext").value = selText();
+  if(selection.some(s => !s.cite && !s.citeErr)) ensureCites().then(ch => { if(ch && $("#seld").open) renderSel(); });
+}
+/* ---------- export and import ---------- */
+const CSV_COLS = ["number","region","species","title","date","volume","page","contributor","attribution","license","license_url","copyright_status","rights_holder","link","image_url","page_id","item_id","region_code","thumb_url"];
+function toCSV(){
+  const rows = grouped().flatMap(g => g.items.map(x => { const s = x.s, c = s.cite || {};
+    return [x.n, g.region, s.species, s.title, s.date || "", s.vol || "", s.num || "", c.inst || "", attribution(s), c.label || "", c.url || "", c.status || "", c.holder || "", pageLink(s), s.full, s.id, s.item || "", s.region || "", s.thumb]; }));
+  const q = v => { v = String(v == null ? "" : v); if(/^[=+\-@\t]/.test(v)) v = "'" + v; return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  return [CSV_COLS].concat(rows).map(r => r.map(q).join(",")).join("\r\n");
+}
+function parseCSV(t){
+  const rows = []; let row = [], v = "", inQ = false; t = t.replace(/^\ufeff/, "");
+  for(let i = 0; i < t.length; i++){ const c = t[i];
+    if(inQ){ if(c === '"'){ if(t[i+1] === '"'){ v += '"'; i++; } else inQ = false; } else v += c; }
+    else if(c === '"') inQ = true;
+    else if(c === ","){ row.push(v); v = ""; }
+    else if(c === "\n" || c === "\r"){ if(c === "\r" && t[i+1] === "\n") i++; row.push(v); v = ""; rows.push(row); row = []; }
+    else v += c; }
+  if(v || row.length){ row.push(v); rows.push(row); }
+  return rows.filter(r => r.some(x => x !== ""));
+}
+function importCSV(text){
+  const rows = parseCSV(text); if(rows.length < 2) throw new Error("That file has no rows.");
+  const head = rows[0].map(h => h.trim().toLowerCase()), col = n => head.indexOf(n);
+  if(col("page_id") < 0) throw new Error("That file has no page_id column, so it does not look like a Plate Finder export.");
+  const regionCode = n => Object.keys(REGIONS).find(k => REGIONS[k] === n) || "";
+  let added = 0;
+  for(const r of rows.slice(1)){
+    const g = n => { const i = col(n); let x = i < 0 ? "" : String(r[i] || "").trim(); if(/^'[=+\-@\t]/.test(x)) x = x.slice(1); return x; };
+    const id = g("page_id"); if(!/^\d+$/.test(id) || selection.some(s => String(s.id) === id)) continue;
+    selection.push({id:+id, thumb:BHL + "/pagethumb/" + id, full:BHL + "/pageimage/" + id, url:BHL + "/page/" + id, title:g("title"), date:g("date"), vol:g("volume"), num:g("page"),
+      item:/^\d+$/.test(g("item_id")) ? +g("item_id") : undefined, species:g("species"), region:REGIONS[g("region_code")] ? g("region_code") : regionCode(g("region"))});
+    added++;
+  }
+  store.set("bhlSel", selection); return added;
+}
+function saveBlob(blob, name){ const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 10000); }
+function selMsg(t){ $("#selmsg").textContent = t || ""; }
+async function downloadCSV(){ if(!selection.length) return selMsg("Nothing selected.");
+  selMsg("Preparing the file…"); await ensureCites().catch(() => {});
+  saveBlob(new Blob(["\ufeff" + toCSV()], {type:"text/csv;charset=utf-8"}), "plate-finder-selection.csv");
+  selMsg("Saved plate-finder-selection.csv" + (selection.some(s => !s.cite) ? ". Some rows have no contributor or license because BHL did not return them." : ".")); renderSel(); }
+$("#dlcsv").onclick = () => void downloadCSV();
+$("#impfile").onchange = async e => { const f = e.target.files[0]; e.target.value = ""; if(!f) return;
+  try{ const n = importCSV(await f.text()); tray(); renderSel(); selMsg(n ? "Added " + n + " image" + (n === 1 ? "" : "s") + " from " + f.name + "." : "Every image in " + f.name + " is already in your selection."); }
+  catch(err){ selMsg(err.message); } };
+async function copyText(t){ try{ await navigator.clipboard.writeText(t); }catch(e){ const ta = $("#seltext"), v = ta.value; ta.value = t; ta.select(); try{ document.execCommand("copy"); }catch(e2){} ta.value = v; } }
+$("#opensel").onclick = () => { selection.forEach(s => delete s.citeErr); selMsg(""); renderSel(); $("#seld").showModal(); };
+$("#sellist").onclick = e => { let b = e.target.closest("[data-rm]"); if(b){ toggleSel(b.dataset.rm); return renderSel(); }
+  if((b = e.target.closest("[data-cite]"))){ const s = selection.find(x => String(x.id) === b.dataset.cite); if(!s) return;
+    copyText(citeText(s)); b.textContent = "Copied"; setTimeout(() => b.textContent = "Copy citation", 1500); }
+  if((b = e.target.closest("[data-link]"))){ const s = selection.find(x => String(x.id) === b.dataset.link); if(!s) return;
+    copyText(pageLink(s)); b.textContent = "Copied"; setTimeout(() => b.textContent = "Copy link", 1500); } };
+$("#withimg").onchange = () => { $("#seltext").value = selText(); };
+$("#clearsel").onclick = () => { selection = []; store.set("bhlSel", selection); document.querySelectorAll(".pg.sel").forEach(f => { f.classList.remove("sel"); f.querySelector(".pick").textContent = "+"; }); tray(); renderSel(); };
+$("#copysel").onclick = async () => {
+  const ta = $("#seltext"), b = $("#copysel");
+  try{ await navigator.clipboard.writeText(ta.value); }catch(e){ ta.select(); try{ document.execCommand("copy"); }catch(e2){} }
+  b.textContent = "Copied"; setTimeout(() => b.textContent = "Copy numbered list", 1500);
+};
+
+keyUI(); tray(); applyHash();
+</script>
+</body>
+</html>
